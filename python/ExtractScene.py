@@ -5,21 +5,34 @@ import subprocess
 import json
 import sys, getopt
 
+'''
+    args.append(f"select=gt(scene\,{sensibility}),scale={scale}:-1,tile={tilex}x{tiley}")
+    args.append('-frames:v')
+    args.append('1')
+    args.append('-qscale:v')
+    args.append('3')
+'''
 
-'''time ./ffmpeg -i ./VIDEO.mp4 -vf "select=gt(scene\,0.4),scale=160:-1,tile=6x80" -frames:v 1 -qscale:v 3 preview.jpg'''
 def extract_scenes(_video_path):
     ffmpeg_exe = os.path.dirname(os.path.dirname(__file__))+"/lib/ffmpeg-2022-04-03-git-1291568c98-essentials_build/bin/ffmpeg.exe"
-    output_path = os.path.dirname(_video_path)+"/preview.jpg"
+    sensibility = 0.3
+    scale = 400
+    tilex = 10
+    tiley = 100
+    output_dir = os.path.dirname(_video_path)
+    dir_name = f"scenes_se{str(sensibility)}_sc{str(scale)}"
+    dir_path = f"{output_dir}/{dir_name}"
+    if os.path.exists( dir_path)==False:
+      os.mkdir(dir_path)
+    output_path = f"{dir_path}/shot_%4d.jpg"
     args = []
     args.append(ffmpeg_exe)
     args.append('-i')
     args.append(_video_path)
     args.append('-vf')
-    args.append("select=gt(scene\,0.4),scale=160:-1,tile=6x8")
-    args.append('-frames:v')
-    args.append('1')
-    args.append('-qscale:v')
-    args.append('3')
+    args.append(f"select=gt(scene\,{sensibility}),scale={scale}:-1")
+    args.append('-vsync')
+    args.append('0')
     args.append(output_path)
     cmd =" ".join(args)
     print(cmd)
