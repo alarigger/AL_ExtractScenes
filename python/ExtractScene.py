@@ -4,49 +4,49 @@ import os
 import subprocess
 import json
 import sys, getopt
-
-'''
-    args.append(f"select=gt(scene\,{sensibility}),scale={scale}:-1,tile={tilex}x{tiley}")
-    args.append('-frames:v')
-    args.append('1')
-    args.append('-qscale:v')
-    args.append('3')
-'''
+import json
 
 def load_config():
-  json_path= os.path.dirname(os.path.dirname(__file__))+"config.json"
-  if os.path.exists(jjson_path):
-    with open(json_path, "r") as jsonFile:
+  config_path= os.path.dirname(os.path.dirname(__file__))+"/config.json"
+  print(config_path)
+  if os.path.exists(config_path):
+    with open(config_path, "r") as jsonFile:
           data = json.load(jsonFile)
           return data
 
-
+  else:
+    print(f"config file not found at {config_path}")
 
 def extract_scenes(_video_path):
     config = load_config()
-    ffmpeg_exe = config['ffmpeg']
-    sensibility = 0.3
-    scale = 400
-    tilex = 10
-    tiley = 100
-    output_dir = os.path.dirname(_video_path)
-    dir_name = f"scenes_se{str(sensibility)}_sc{str(scale)}"
-    dir_path = f"{output_dir}/{dir_name}"
-    if os.path.exists( dir_path)==False:
-      os.mkdir(dir_path)
-    output_path = f"{dir_path}/shot_%4d.jpg"
-    args = []
-    args.append(ffmpeg_exe)
-    args.append('-i')
-    args.append(_video_path)
-    args.append('-vf')
-    args.append(f"select=gt(scene\,{sensibility}),scale={scale}:-1")
-    args.append('-vsync')
-    args.append('0')
-    args.append(output_path)
-    cmd =" ".join(args)
-    print(cmd)
-    subprocess.run(args)
+    ffmpeg_dict_key = 'ffmpeg_path'
+    ffmpeg_exe = config.get(ffmpeg_dict_key,None)
+    if ffmpeg_exe is not None : 
+      sensibility = 0.3
+      scale = 400
+      tilex = 10
+      tiley = 100
+      output_dir = os.path.dirname(_video_path)
+      dir_name = f"scenes_se{str(sensibility)}_sc{str(scale)}"
+      dir_path = f"{output_dir}/{dir_name}"
+      if os.path.exists( dir_path)==False:
+        os.mkdir(dir_path)
+      output_path = f"{dir_path}/shot_%4d.jpg"
+      args = []
+      args.append(ffmpeg_exe)
+      args.append('-i')
+      args.append(_video_path)
+      args.append('-vf')
+      args.append(f"select=gt(scene\,{sensibility}),scale={scale}:-1")
+      args.append('-vsync')
+      args.append('0')
+      args.append(output_path)
+      cmd =" ".join(args)
+      print(cmd)
+      print("----running ffmpeg cmd")
+      subprocess.run(args)
+    else:
+      print(f"key {ffmpeg_dict_key} not found in config json")
 
     
 def main(argv):
