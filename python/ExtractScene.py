@@ -1,14 +1,18 @@
 
 #!/usr/bin/env python
+from __future__ import print_function # Only Python 2.x
 import os
 import subprocess
 import json
 import sys, getopt
 import json
 import uuid
+import subprocess
 
 CURRENT_BATCH_ID= str(uuid.uuid4())[:8]
 
+def execute(cmd):
+    popen = subprocess.Popen(cmd, stdout=subprocess.PIPE, universal_newlines=True)
 
 def load_config():
   path= os.path.dirname(os.path.dirname(__file__))+"/config.json"
@@ -82,7 +86,7 @@ def create_shot_images(_video_path,sensibility=0.3):
         cmd =" ".join(args)
         print(cmd)
         print("----running ffmpeg cmd")
-        subprocess.run(args)
+        execute(args)
         return f"shot images created at {os.path.dirname(output_path)}"
     else:
       print(f"key {ffmpeg_dict_key} not found in config json")
@@ -115,7 +119,7 @@ def create_tile_images(_video_path,sensibility=0.3,scale=400,tilex=5,tiley=5):
         cmd =" ".join(args)
         print(cmd)
         print("----running ffmpeg cmd")
-        subprocess.run(args)
+        execute(args)
         return f"tile images created at {os.path.dirname(output_path)}"
     else:
       print(f"key {ffmpeg_dict_key} not found in config json")
