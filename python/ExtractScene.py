@@ -13,8 +13,18 @@ import sys, getopt
     args.append('3')
 '''
 
+def load_config():
+  json_path= os.path.dirname(os.path.dirname(__file__))+"config.json"
+  if os.path.exists(jjson_path):
+    with open(json_path, "r") as jsonFile:
+          data = json.load(jsonFile)
+          return data
+
+
+
 def extract_scenes(_video_path):
-    ffmpeg_exe = os.path.dirname(os.path.dirname(__file__))+"/lib/ffmpeg-2022-04-03-git-1291568c98-essentials_build/bin/ffmpeg.exe"
+    config = load_config()
+    ffmpeg_exe = config['ffmpeg']
     sensibility = 0.3
     scale = 400
     tilex = 10
