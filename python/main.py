@@ -1,7 +1,7 @@
 import sys
 import os
 import ExtractScene
-from PySide2.QtWidgets import (QLineEdit, QPushButton, QApplication,QFileDialog,
+from PyQt5.QtWidgets import (QLineEdit, QPushButton, QApplication,QFileDialog,
     QVBoxLayout, QDialog,QTextEdit,QDoubleSpinBox,QSpinBox)
 
 class Form(QDialog):
@@ -36,10 +36,10 @@ class Form(QDialog):
 
         #load previous user data 
         self.inputSensitivity.setValue(float(ExtractScene.get_user_data("sensitivity",0.3)))
-        self.inputTileX.setValue(float(ExtractScene.get_user_data("tilex",5)))
-        self.inputTileY.setValue(float(ExtractScene.get_user_data("tiley",5)))
-        self.inputScale.setValue(float(ExtractScene.get_user_data("scale",5)))
-        self.load_video_path(ExtractScene.get_user_data("video_path",""))
+        self.inputTileX.setValue(int(ExtractScene.get_user_data("tilex",5)))
+        self.inputTileY.setValue(int(ExtractScene.get_user_data("tiley",5)))
+        self.inputScale.setValue(int(ExtractScene.get_user_data("scale",5)))
+        self.load_video_path(ExtractScene.get_user_data("video_path",None))
 
         # Create layout and add widgets
         layout = QVBoxLayout()
@@ -54,7 +54,7 @@ class Form(QDialog):
         self.setLayout(layout)
         # Add button signal to greetings slot
         self.generateButton.clicked.connect(self.generate_files)
-        self.loadVideoPathButton.clicked.connect(self.load_video_path)
+        self.loadVideoPathButton.clicked.connect(self.find_video_path)
 
     # Greets the user
     def generate_files(self):
@@ -69,7 +69,7 @@ class Form(QDialog):
             result = ExtractScene.create_shot_images(self.video_path, self.sensitivity )
             self.send_feedback(result)
         else:
-            self.send_feedback(f"wrong video path ! {self.video_path}")
+            self.send_feedback("wrong video path ! "+self.video_path+"")
 
     def load_user_input(self):
         self.sensitivity = self.inputSensitivity.value()
@@ -91,7 +91,6 @@ class Form(QDialog):
         self.load_video_path(fileName[0])
 
     def load_video_path(self,_path):
-        if self.check_path(_path):
             self.current_video_path=_path 
             self.send_feedback(str(_path))            
 
@@ -104,13 +103,15 @@ class Form(QDialog):
         self.feedback.setHtml(self.log)
 
     def check_path(self,_path):
-        extension = os.path.basename(_path).split(".")[-1]
-        video_formats = ['mov','mp4','wmv','mkv','avi']
-        if extension in video_formats:
-            return True
-        else:
-            self.send_feedback(f"ERROR the file should be a video ! {video_formats}")
-            return False
+        if  isinstance(_path, str):
+            extension = os.path.basename(_path).split(".")[-1]
+            video_formats = ['mov','mp4','wmv','mkv','avi']
+            if extension in video_formats:
+                return True
+            else:
+                self.send_feedback("ERROR the file should be a video ! "+video_formats)
+                return False
+        return  False
 
 
 if __name__ == '__main__':

@@ -22,7 +22,7 @@ def load_config():
           data = json.load(jsonFile)
           return data
   else:
-    print(f"config file not found at {path}")
+    print("config file not found at "+path)
 
 def get_user_data(_key,_default=None):
   path= os.path.dirname(os.path.dirname(__file__))+"/data/user.json"
@@ -34,7 +34,7 @@ def get_user_data(_key,_default=None):
           else:
             return _default
   else:
-    print(f"user file not found at {path}")
+    print("user file not found at "+path)
     return _default
 
 def set_user_data(_key,_value):
@@ -48,21 +48,21 @@ def set_user_data(_key,_value):
         string = json.dumps(data)
         jsonFile.write(string)
   else:
-    print(f"user file not found at {path}")
+    print("user file not found at "+path)
 
 def get_output_path_for_video(_video_path,_suffix):
   output_dir = os.path.dirname(_video_path)
   id = CURRENT_BATCH_ID
   video_name = os.path.basename(_video_path).split(".")[0]
-  dir_name = f"{video_name}"
-  dir_path = f"{output_dir}/{dir_name}/{_suffix}_{id}"
+  dir_name = video_name
+  dir_path = output_dir+"/"+dir_name+"/"+_suffix+"_"+id
   if os.path.exists( dir_path)==False:
       os.mkdir(dir_path)
   if os.path.exists( dir_path):
     print(dir_path)
-    return  f"{dir_path}/{video_name}_{_suffix}_%5d.jpg"
+    return  dir_path+"/"+video_name+"_"+_suffix+"_%5d.jpg"
   else:
-    print(f"could not create output dir {dir_path}")
+    print("could not create output dir "+dir_path)
     return None
 
 def create_shot_images(_video_path,sensibility=0.3):
@@ -79,7 +79,7 @@ def create_shot_images(_video_path,sensibility=0.3):
         args.append('-i')
         args.append(_video_path)
         args.append('-vf')
-        args.append(f"select=gt(scene\,{sensibility})")
+        args.append("select=gt(scene\,"+sensibility+")")
         args.append('-vsync')
         args.append('0')
         args.append(output_path)
@@ -87,9 +87,9 @@ def create_shot_images(_video_path,sensibility=0.3):
         print(cmd)
         print("----running ffmpeg cmd")
         execute(args)
-        return f"shot images created at {os.path.dirname(output_path)}"
+        return "shot images created at "+os.path.dirname(output_path)
     else:
-      print(f"key {ffmpeg_dict_key} not found in config json")
+      print("key "+ffmpeg_dict_key+" not found in config json")
 
 def create_tile_images(_video_path,sensibility=0.3,scale=400,tilex=5,tiley=5):
     print(_video_path)
@@ -106,13 +106,7 @@ def create_tile_images(_video_path,sensibility=0.3,scale=400,tilex=5,tiley=5):
         args.append('-i')
         args.append(_video_path)
         args.append('-vf')
-        args.append(f"select=gt(scene\,{sensibility}),scale={scale}:-1,tile={tilex}x{tiley}")
-        '''
-        args.append('-frames:v')
-        args.append('1')
-        args.append('-qscale:v')
-        args.append('3')
-        '''
+        args.append('select=gt(scene\,'+str(sensibility)+'),scale='+str(scale)+':-1,tile='+str(tilex)+'x'+str(tiley))
         args.append('-vsync')
         args.append('0')
         args.append(output_path)
@@ -120,9 +114,9 @@ def create_tile_images(_video_path,sensibility=0.3,scale=400,tilex=5,tiley=5):
         print(cmd)
         print("----running ffmpeg cmd")
         execute(args)
-        return f"tile images created at {os.path.dirname(output_path)}"
+        return "tile images created at "+os.path.dirname(output_path)
     else:
-      print(f"key {ffmpeg_dict_key} not found in config json")
+      print("key "+ffmpeg_dict_key+" not found in config json")
 
     
 def main(argv):
@@ -152,6 +146,6 @@ def main(argv):
 if __name__ == "__main__":
    main(sys.argv[1:])
 '''
- python D:/1_TRAVAIL/WIP/ALARIGGER/CODING/PYTHON/REPOSITORIES/AL_ExtractScenes/python/ExtractScene.py -v D:/1_TRAVAIL/TEST_MATERIAL/test_video.mkv
+ python D:/1_TRAVAIL/WIP/ALARIGGER/CODING/PYTHON/REPOSITORIES/AL_ExtractScenes/python/main.py 
 
 '''
